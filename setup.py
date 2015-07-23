@@ -1,4 +1,10 @@
-from distutils.core import setup
+from setuptools import setup
+from os import path
+
+here = path.abspath(path.dirname(__file__))
+
+with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+    long_description = f.read()
 
 setup(
     name='crestroncleanup',
@@ -9,6 +15,7 @@ setup(
     author='brettvitaz',
     author_email='brett@vitaz.net',
     description='Clean up signal names and other parts of a messy Crestron SIMPL program.',
+    long_description=long_description,
     keywords=['crestron', 'simpl', 'cleanup'],
-    classifiers=[]
+    classifiers=['Development Status :: 3 - Alpha'],
 )
