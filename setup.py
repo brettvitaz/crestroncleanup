@@ -18,4 +18,9 @@ setup(
     long_description=long_description,
     keywords=['crestron', 'simpl', 'cleanup'],
     classifiers=['Development Status :: 3 - Alpha'],
+    entry_points={
+        'console_scripts': [
+            'crestroncleanup = crestroncleanup.crestroncleanup_console:main',
+        ]
+    }
 )
