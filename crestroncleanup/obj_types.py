@@ -95,11 +95,17 @@ class ObjType:
 class ObjTypeSignal(ObjType):
     def _process(self, str_in):
         str_out = str_in
+        # Capitalize letters after a dash or underscore.
         str_out = re.sub(r'(^|[-_\[\(<])([a-z])', lambda _: _.group(1) + _.group(2).upper(), str_out)
-        str_out = re.sub(re.compile(r'(_)(fb)([^A-Za-z])', re.IGNORECASE), lambda _: _.group(1) + _.group(2).upper() + _.group(3), str_out)
+        # Capitalize 'fb' if it is not part of another word.
+        str_out = re.sub(re.compile(r'(_)(fb)($|[^A-Za-z])', re.IGNORECASE), lambda _: _.group(1) + _.group(2).upper() + _.group(3), str_out)
+        # Split numbers from words.
         str_out = re.sub(re.compile(r'([a-z])(\d)', re.IGNORECASE), r'\1_\2', str_out)
+        # Pad numbers with a 0.
+        # TODO: Identify and correctly pad number sequences over 2 digits when necessary.
         str_out = re.sub(r'(_)(\d)(?![\d-])', lambda _: '{}{:0>2s}'.format(*_.groups()), str_out)
 
+        # Substitute known words with correct formatting.
         str_out = re.sub(re.compile(r'DirecTV', re.IGNORECASE), 'DirecTV', str_out)
         str_out = re.sub(re.compile(r'_TV_', re.IGNORECASE), '_TV_', str_out)
         str_out = re.sub(re.compile(r'_RCVR_', re.IGNORECASE), '_Rcvr_', str_out)
