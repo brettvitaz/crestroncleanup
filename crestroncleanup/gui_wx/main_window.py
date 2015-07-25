@@ -11,6 +11,7 @@ class MainWindow(wx.Frame):
     def __init__(self, parent, title):
         super(MainWindow, self).__init__(parent, title=title, size=(800, 600))
         self.CreateStatusBar()
+        # self.CreateToolBar()
 
         # Create the menus
         file_menu = wx.Menu()
@@ -36,8 +37,8 @@ class MainWindow(wx.Frame):
         dlg = wx.FileDialog(self, 'Choose a file', '', '', '*.smw', wx.OPEN)
         if dlg.ShowModal() == wx.ID_OK:
             filename = dlg.GetFilename()
-            dirname = dlg.GetDirectory()
-            self.file_panel.file_note_book.add_file(dirname, filename)
+            filepath = dlg.GetDirectory()
+            self.file_panel.file_note_book.add_file(filepath, filename)
             wx.CallAfter(self.file_panel.file_note_book.SendSizeEvent)
         dlg.Destroy()
 
@@ -55,7 +56,7 @@ class FilePanel(wx.Panel):
     """
 
     def __init__(self, *args, **kwargs):
-        wx.Panel.__init__(self, *args, **kwargs)
+        super(FilePanel, self).__init__(*args, **kwargs)
         self.file_note_book = FileNoteBook(self)
         sizer = wx.BoxSizer()
         sizer.Add(self.file_note_book, 1, wx.EXPAND)
@@ -69,7 +70,7 @@ class FileNoteBook(wx.aui.AuiNotebook):
     """
 
     def __init__(self, *args, **kwargs):
-        wx.aui.AuiNotebook.__init__(self, *args, **kwargs)
+        super(FileNoteBook, self).__init__(*args, **kwargs)
 
     def add_file(self, filepath, filename):
         """
@@ -91,11 +92,10 @@ class FilePage(wx.Panel):
         :param filepath: Name of directory path containing the file.
         :param filename: Name of the file.
         """
-        wx.Panel.__init__(self, *args, **kwargs)
+        super(FilePage, self).__init__(*args, **kwargs)
         text_box = wx.TextCtrl(self, wx.ID_ANY, style=wx.TE_MULTILINE)
         sizer = wx.BoxSizer()
         sizer.Add(text_box, 1, wx.EXPAND)
         self.SetSizer(sizer)
-
         with open(os.path.join(filepath, filename)) as f:
             text_box.SetValue(f.read())
