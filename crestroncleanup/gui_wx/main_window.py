@@ -81,18 +81,14 @@ class MainWindow(wx.Frame):
         :type event: wx.aui.AuiNotebookEvent
         """
         # Update Close menu item enabled state.
-        num_pages = event.EventObject.PageCount > 0
-        self.close_item.Enable(num_pages)
-        print('Page changed. Still open: %d' % num_pages)
+        self.close_item.Enable(event.EventObject.PageCount > 0)
 
     def _on_page_closed(self, event):
         """
         :type event: wx.aui.AuiNotebookEvent
         """
         # Update Close menu item enabled state.
-        num_pages = event.EventObject.PageCount
-        self.close_item.Enable(num_pages > 0)
-        print('Closed! Num pages still open: %d' % num_pages)
+        self.close_item.Enable(event.EventObject.PageCount > 0)
 
 
 class FilePanel(wx.Panel):
