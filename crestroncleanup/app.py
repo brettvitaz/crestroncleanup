@@ -14,7 +14,7 @@ class App:
         self.filename = filename
         self.overwrite = overwrite
         self.backup = backup
-        self.new_ext = NEW_EXT if overwrite is True else ''
+        self.new_ext = NEW_EXT if overwrite is False else ''
 
     def process(self):
         start_time = time.time()
