@@ -7,6 +7,7 @@ class MainWindow(wx.Frame):
     """
     Main Window contains the application.
     """
+
     def __init__(self, parent, title):
         super(MainWindow, self).__init__(parent, title=title, size=(800, 600))
         self.CreateStatusBar()
@@ -52,6 +53,7 @@ class FilePanel(wx.Panel):
     """
     File Panel contains the File Note Book.
     """
+
     def __init__(self, *args, **kwargs):
         wx.Panel.__init__(self, *args, **kwargs)
         self.file_note_book = FileNoteBook(self)
@@ -65,6 +67,7 @@ class FileNoteBook(wx.aui.AuiNotebook):
     """
     File Note Book contains the tabbed file views.
     """
+
     def __init__(self, *args, **kwargs):
         wx.aui.AuiNotebook.__init__(self, *args, **kwargs)
 
@@ -82,6 +85,7 @@ class FilePage(wx.Panel):
     """
     File Page contains the controls to interact with the file.
     """
+
     def __init__(self, filepath, filename, *args, **kwargs):
         """
         :param filepath: Name of directory path containing the file.
@@ -95,13 +99,3 @@ class FilePage(wx.Panel):
 
         with open(os.path.join(filepath, filename)) as f:
             text_box.SetValue(f.read())
-
-
-def main():
-    gui = wx.App(False)
-    MainWindow(None, 'Crestron Cleanup')
-    gui.MainLoop()
-
-
-if __name__ == '__main__':
-    main()
