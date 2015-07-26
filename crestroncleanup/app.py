@@ -1,12 +1,14 @@
 import collections
 import shutil
 import sys
+import platform
 
 import obj_types
 
 NEW_EXT = '.new'
 OLD_EXT = '.old'
-NEWLINE = '\n'
+NEWLINE_WIN = '\n'
+NEWLINE_NIX = '\r\n'
 
 
 def read_file(filename):
@@ -31,6 +33,11 @@ def read_file(filename):
 
 
 def save_file(obj_store, filename, overwrite=False, backup=True):
+    if platform.system() == 'Windows':
+        newline = NEWLINE_WIN
+    else:
+        newline = NEWLINE_NIX
+
     if overwrite and backup:
         shutil.copy(filename, filename + OLD_EXT)
 
@@ -38,9 +45,9 @@ def save_file(obj_store, filename, overwrite=False, backup=True):
 
     with open(filename + new_ext, mode='w') as f:
         for obj in obj_store.items():
-            obj_lines = ['[{}'.format(NEWLINE)]
+            obj_lines = ['[{}'.format(newline)]
             for k, v in obj:
-                obj_lines.append('{}={}{}'.format(k, v, NEWLINE))
-            obj_lines.append(']{}'.format(NEWLINE))
+                obj_lines.append('{}={}{}'.format(k, v, newline))
+            obj_lines.append(']{}'.format(newline))
 
             f.writelines(obj_lines)
