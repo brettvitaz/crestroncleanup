@@ -49,7 +49,8 @@ class MainWindow(wx.Frame):
         Show an open file dialog to select the file.
         :param event: Menu event.
         """
-        dlg = wx.FileDialog(self, 'Choose a file', '', '', '*.smw', wx.OPEN)
+        dlg = wx.FileDialog(self, 'Open Crestron SIMPL file', '', '', 'Crestron SIMPL files (*.smw)|*.smw',
+                            (wx.FD_OPEN | wx.FD_FILE_MUST_EXIST))
         if dlg.ShowModal() == wx.ID_OK:
             filename = dlg.GetFilename()
             filepath = dlg.GetDirectory()
