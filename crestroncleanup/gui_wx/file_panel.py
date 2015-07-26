@@ -121,7 +121,11 @@ class FilePage(wx.Panel):
             app.save_file(self.data, os.path.join(filepath, filename), True, False)
 
     def _on_process(self, event):
-        self.data.process()
+        results_text = self.data.process()
+
+        dlg = wx.MessageDialog(self, results_text, 'Processing is complete.', wx.OK | wx.ICON_INFORMATION)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def _on_pacman(self, event):
         pass
