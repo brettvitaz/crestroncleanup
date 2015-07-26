@@ -3,13 +3,28 @@ import pprint
 from collections import Counter
 
 
-class ObjStore:
+class ObjStore(object):
     def __init__(self):
         self.obj_count = Counter()
         self.obj_list = []
 
+    @property
+    def obj_dict(self):
+        obj_dict = {}
+        for obj in self.obj_list:
+            if obj.type not in obj_dict.keys():
+                obj_dict[obj.type] = []
+            obj_dict[obj.type].append(obj)
+        return obj_dict
+
+    def get_header(self):
+        return self.obj_dict['Hd']
+
+    def get_device_info(self):
+        return next([obj for obj in self.obj_dict['Dv'] if obj['H'] == '2'])
+
     def add_item(self, k):
-        obj = ObjType.get_obj(k)
+        obj = ObjTypeFactory.create(k)
         self.obj_list.append(obj)
         self.obj_count.update([obj.type])
 
@@ -32,8 +47,6 @@ class ObjStore:
                 if signal_len == len(signal_list):
                     dupes_list.add(obj['Nm'])
                     obj['Nm'] += '__DUP'
-        
-        # modified_count = Counter([_.get('ObjTp') for _ in self.items()])
 
         print('Types', self.obj_count)
         print('Modified', modified_count)
@@ -47,8 +60,13 @@ class ObjStore:
             pp.pprint('{}'.format(list(dupes_list)))
 
 
-class ObjType:
-    def __init__(self, k):
+class ObjType(object):
+    ObjTp = None
+    ObjDesc = None
+
+    def __init__(self, k=None):
+        if k is None:
+            k = {}
         self.obj_dict = k
 
     def __len__(self):
@@ -58,7 +76,7 @@ class ObjType:
         return self.obj_dict[item]
 
     def __setitem__(self, item, value):
-        return self.obj_dict.update({item: value})
+        self.obj_dict[item] = value
 
     def __delitem__(self, item):
         del (self.obj_dict[item])
@@ -76,29 +94,58 @@ class ObjType:
     def type(self):
         return str(self.get('ObjTp'))
 
+    @property
+    def desc(self):
+        return self.ObjDesc or self.type
+
     def process(self):
         return False
 
-    @classmethod
-    def get_type(cls, tp):
-        return {
-            'Sg': ObjTypeSignal
-        }.get(tp, ObjType)
+    def __repr__(self):
+        return self.desc
 
-    @classmethod
-    def get_obj(cls, k):
-        return {
-            'Sg': ObjTypeSignal
-        }.get(k.get('ObjTp'), ObjType)(k)
+    def __str__(self):
+        return repr(self)
+
+
+class ObjTypeHeader(ObjType):
+    ObjTp = 'Hd'
+    ObjDesc = 'Header'
+
+    @property
+    def dealer(self):
+        return self['DlrNm']
+
+    @property
+    def programmer(self):
+        return self['PgmNm']
+
+    @property
+    def controller_name(self):
+        return self['CltNm']
+
+
+class ObjTypeDevice(ObjType):
+    ObjTp = 'Dv'
+    ObjDesc = 'Device'
+
+
+class ObjTypeSymbol(ObjType):
+    ObjTp = 'Sm'
+    ObjDesc = 'Symbol'
 
 
 class ObjTypeSignal(ObjType):
+    ObjTp = 'Sg'
+    ObjDesc = 'Signal'
+
     def _process(self, str_in):
         str_out = str_in
         # Capitalize letters after a dash or underscore.
         str_out = re.sub(r'(^|[-_\[\(<])([a-z])', lambda _: _.group(1) + _.group(2).upper(), str_out)
         # Capitalize 'fb' if it is not part of another word.
-        str_out = re.sub(re.compile(r'(_)(fb)($|[^A-Za-z])', re.IGNORECASE), lambda _: _.group(1) + _.group(2).upper() + _.group(3), str_out)
+        str_out = re.sub(re.compile(r'(_)(fb)($|[^A-Za-z])', re.IGNORECASE),
+                         lambda _: _.group(1) + _.group(2).upper() + _.group(3), str_out)
         # Split numbers from words.
         str_out = re.sub(re.compile(r'([a-z])(\d)', re.IGNORECASE), r'\1_\2', str_out)
         # Pad numbers with a 0.
@@ -122,3 +169,11 @@ class ObjTypeSignal(ObjType):
             raise Exception('Failed to process signal. Process operation is not idempotent. '
                             'Orig:{} New:{} Test:{}'.format(orig, temp, self._process(temp)))
         return orig != temp
+
+
+class ObjTypeFactory(object):
+    OBJ_TYPES = {cls.ObjTp: cls for cls in ObjType.__subclasses__()}
+
+    @staticmethod
+    def create(k):
+        return ObjTypeFactory.OBJ_TYPES.get(k.get('ObjTp'), ObjType)(k)
