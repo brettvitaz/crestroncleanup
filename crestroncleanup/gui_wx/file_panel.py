@@ -106,8 +106,8 @@ class FilePage(wx.Panel):
 
         # Pacman Button
         # TODO - Determine if a Pacman button is necessary.
-        toolbar.AddSimpleTool(wx.ID_ANY, eg.GetBitmap_pacman_png(), shortHelpString='Pacman')
-        self.Bind(wx.EVT_TOOL, self._on_pacman, id=wx.ID_SETUP)
+        toolbar.AddSimpleTool(100001, eg.GetBitmap_pacman_png(), shortHelpString='Pacman')
+        self.Bind(wx.EVT_TOOL, self._on_pacman, id=100001)
 
         toolbar.Realize()
         return toolbar
@@ -119,16 +119,40 @@ class FilePage(wx.Panel):
             filename = dlg.GetFilename()
             filepath = dlg.GetDirectory()
             app.save_file(self.data, os.path.join(filepath, filename), True, False)
+        dlg.Destroy()
 
     def _on_process(self, event):
         results_text = self.data.process()
 
         dlg = wx.MessageDialog(self, results_text, 'Processing is complete.', wx.OK | wx.ICON_INFORMATION)
-        dlg.ShowModal()
-        dlg.Destroy()
+        self.Bind(wx.EVT_WINDOW_MODAL_DIALOG_CLOSED, self._on_modal_closed, dlg)
+        dlg.ShowWindowModal()
+
+    def _on_modal_closed(self, event):
+        event.GetDialog().Destroy()
 
     def _on_pacman(self, event):
-        pass
+        class PacmanDialog(wx.Dialog):
+            def __init__(self, parent, ID):
+                super(PacmanDialog, self).__init__(parent, ID, 'Pacman', size=wx.DefaultSize, pos=wx.DefaultPosition,
+                                                   style=wx.DEFAULT_DIALOG_STYLE)
+                sizer = wx.BoxSizer(wx.HORIZONTAL)
+                sizer.Add(wx.StaticBitmap(self, wx.ID_ANY, eg.GetBitmap_pacman_lg_png(), (0, 0)))
+
+                btnsizer = wx.StdDialogButtonSizer()
+                btn = wx.Button(self, wx.ID_OK)
+                btn.SetDefault()
+
+                btnsizer.AddButton(btn)
+                btnsizer.Realize()
+                sizer.Add(btnsizer, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
+
+                self.SetSizer(sizer)
+                sizer.Fit(self)
+
+        dlg = PacmanDialog(self, wx.ID_ANY)
+        dlg.ShowModal()
+        dlg.Destroy()
 
 
 class FileTreeListModel(wx.dataview.PyDataViewModel):
