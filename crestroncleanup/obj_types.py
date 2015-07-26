@@ -7,23 +7,29 @@ class ObjStore(object):
     def __init__(self):
         self.obj_count = Counter()
         self.obj_list = []
+        self._obj_dict = {}
+        self._obj_dict_clean = False
+        self.modified_count = Counter()
 
     @property
     def obj_dict(self):
-        obj_dict = {}
-        for obj in self.obj_list:
-            if obj.type not in obj_dict.keys():
-                obj_dict[obj.type] = []
-            obj_dict[obj.type].append(obj)
-        return obj_dict
+        if not self._obj_dict or not self._obj_dict_clean:
+            obj_dict = {}
+            for obj in self.obj_list:
+                if obj.type not in obj_dict.keys():
+                    obj_dict[obj.type] = []
+                obj_dict[obj.type].append(obj)
+            self._obj_dict, self._obj_dict_clean = obj_dict, True
+        return self._obj_dict
 
     def get_header(self):
-        return self.obj_dict['Hd']
+        return self.obj_dict['Hd'][0]
 
     def get_device_info(self):
         return [obj for obj in self.obj_dict['Dv'] if obj['H'] == '2'][0]
 
     def add_item(self, k):
+        self._obj_dict_clean = False
         obj = ObjTypeFactory.create(k)
         self.obj_list.append(obj)
         self.obj_count.update([obj.type])
@@ -33,13 +39,13 @@ class ObjStore(object):
             yield obj
 
     def process(self):
-        modified_count = Counter()
+        self._obj_dict_clean = False
         signal_list = set()
         dupes_list = set()
 
         for obj in self.items():
             if obj.process():
-                modified_count.update([obj.type])
+                self.modified_count.update([obj.type])
 
             if isinstance(obj, ObjTypeSignal):
                 signal_len = len(signal_list)
@@ -49,10 +55,10 @@ class ObjStore(object):
                     obj['Nm'] += '__DUP'
 
         print('Types', self.obj_count)
-        print('Modified', modified_count)
+        print('Modified', self.modified_count)
         print('Stats:')
         for k, v in sorted(self.obj_count.items()):
-            print('   {}: {} (Changed: {})'.format(k, v, modified_count[k]))
+            print('   {}: {} (Changed: {})'.format(k, v, self.modified_count[k]))
 
         if len(dupes_list):
             print('Warning: Duplicate signal names present after processing.')
@@ -61,8 +67,8 @@ class ObjStore(object):
 
 
 class ObjType(object):
-    ObjTp = None
-    ObjDesc = None
+    ObjTp = ''
+    ObjDesc = ''
 
     def __init__(self, k=None):
         if k is None:
@@ -91,8 +97,12 @@ class ObjType(object):
             return default
 
     @property
+    def id(self):
+        return self.get('H') or ''
+
+    @property
     def type(self):
-        return str(self.get('ObjTp'))
+        return self.get('ObjTp') or ''
 
     @property
     def desc(self):
@@ -112,6 +122,19 @@ class ObjType(object):
         return self.get('Nm')
 
 
+class ObjTypeVersion(ObjType):
+    ObjTp = None
+    ObjDesc = 'Version'
+
+    @ObjType.id.getter
+    def id(self):
+        return self.get('Version') or ''
+
+    @ObjType.type.getter
+    def type(self):
+        return self.ObjDesc
+
+
 class ObjTypeHeader(ObjType):
     ObjTp = 'Hd'
     ObjDesc = 'Header'
@@ -124,9 +147,18 @@ class ObjTypeHeader(ObjType):
     def programmer(self):
         return self['PgmNm']
 
-    @property
-    def controller_name(self):
+    @ObjType.name.getter
+    def name(self):
         return self['CltNm']
+
+
+class ObjTypeDatabase(ObjType):
+    ObjTp = 'Db'
+    ObjDesc = 'Database'
+
+    @ObjType.name.getter
+    def name(self):
+        return self.get('Mnf') + ' ' + self.get('Mdl')
 
 
 class ObjTypeDevice(ObjType):
@@ -189,11 +221,6 @@ class ObjTypeSignal(ObjType):
     @property
     def signal_type(self):
         return SgTp.get(self.get('SgTp'))
-
-    @ObjType.desc.getter
-    def desc(self):
-        desc = '%s: %s - %s' % (super(ObjTypeSignal, self).desc, self.name, self.signal_type)
-        return desc
 
 
 class ObjTypeFactory(object):
