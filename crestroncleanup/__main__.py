@@ -1,5 +1,5 @@
 import sys
-from crestroncleanup import crestroncleanup_console
+import crestroncleanup_console
 import crestroncleanup_gui
 
 if __name__ == '__main__':
