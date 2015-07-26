@@ -1,6 +1,6 @@
 import argparse
 import time
-import app
+import file_services
 
 
 def main():
@@ -18,9 +18,9 @@ def main():
 
     start_time = time.time()
 
-    data = app.read_file(filename)
+    data = file_services.read_file(filename)
     data.process()
-    app.save_file(data, filename, overwrite, backup)
+    file_services.save_file(data, filename, overwrite, backup)
 
     end_time = time.time()
     print('Elapsed time: {}'.format(end_time - start_time))

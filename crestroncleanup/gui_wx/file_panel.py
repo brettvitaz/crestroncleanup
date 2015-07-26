@@ -2,7 +2,7 @@ import os
 import wx
 import wx.aui
 import wx.dataview
-import app
+import file_services
 
 from gui_wx import embedded_graphics_16 as eg
 from obj_types import ObjType
@@ -64,7 +64,7 @@ class FilePage(wx.Panel):
         sizer = wx.BoxSizer()
         sizer.Add(text_box, 1, wx.EXPAND)
 
-        self.data = app.read_file(os.path.join(filepath, filename))
+        self.data = file_services.read_file(os.path.join(filepath, filename))
 
         model = FileTreeListModel(self.data.obj_dict)
 
@@ -118,7 +118,7 @@ class FilePage(wx.Panel):
         if dlg.ShowModal() == wx.ID_OK:
             filename = dlg.GetFilename()
             filepath = dlg.GetDirectory()
-            app.save_file(self.data, os.path.join(filepath, filename), True, False)
+            file_services.save_file(self.data, os.path.join(filepath, filename), True, False)
         dlg.Destroy()
 
     def _on_process(self, event):
