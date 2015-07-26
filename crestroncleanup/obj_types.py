@@ -1,5 +1,4 @@
 import re
-import pprint
 from collections import Counter
 
 
@@ -54,16 +53,16 @@ class ObjStore(object):
                     dupes_list.add(obj['Nm'])
                     obj['Nm'] += '__DUP'
 
-        print('Types', self.obj_count)
-        print('Modified', self.modified_count)
-        print('Stats:')
+        results_text = 'Stats:\n'
         for k, v in sorted(self.obj_count.items()):
-            print('   {}: {} (Changed: {})'.format(k, v, self.modified_count[k]))
+            results_text += '   {}: {} (Changed: {})\n'.format(k, v, self.modified_count[k])
 
         if len(dupes_list):
-            print('Warning: Duplicate signal names present after processing.')
-            pp = pprint.PrettyPrinter()
-            pp.pprint('{}'.format(list(dupes_list)))
+            results_text += 'Warning: Duplicate signal names present after processing.\n'
+            for dupe in dupes_list:
+                results_text += '    {}\n'.format(dupe)
+
+        return results_text
 
 
 class ObjType(object):
