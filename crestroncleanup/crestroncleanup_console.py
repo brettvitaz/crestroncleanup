@@ -19,8 +19,9 @@ def main():
     start_time = time.time()
 
     data = file_services.read_file(filename)
-    data.process()
+    result_text = data.process()
     file_services.save_file(data, filename, overwrite, backup)
 
     end_time = time.time()
+    print(result_text)
     print('Elapsed time: {}'.format(end_time - start_time))
