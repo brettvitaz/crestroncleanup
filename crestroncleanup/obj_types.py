@@ -21,7 +21,7 @@ class ObjStore(object):
         return self.obj_dict['Hd']
 
     def get_device_info(self):
-        return next([obj for obj in self.obj_dict['Dv'] if obj['H'] == '2'])
+        return [obj for obj in self.obj_dict['Dv'] if obj['H'] == '2'][0]
 
     def add_item(self, k):
         obj = ObjTypeFactory.create(k)
