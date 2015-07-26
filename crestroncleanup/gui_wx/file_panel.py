@@ -54,8 +54,7 @@ class FilePage(wx.Panel):
         """
         super(FilePage, self).__init__(*args, **kwargs)
 
-        self.overwrite = False
-        self.backup = True
+        self.filename = filename
 
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         main_sizer.Add(self._create_toolbar(), 0, wx.EXPAND)
@@ -65,8 +64,7 @@ class FilePage(wx.Panel):
         sizer = wx.BoxSizer()
         sizer.Add(text_box, 1, wx.EXPAND)
 
-        self.filename = os.path.join(filepath, filename)
-        self.data = app.read_file(self.filename)
+        self.data = app.read_file(os.path.join(filepath, filename))
 
         model = FileTreeListModel(self.data.obj_dict)
 
@@ -104,15 +102,10 @@ class FilePage(wx.Panel):
         toolbar.AddSimpleTool(wx.ID_CONVERT, eg.GetBitmap_play_png(), shortHelpString='Process file')
         self.Bind(wx.EVT_TOOL, self._on_process, id=wx.ID_CONVERT)
 
-        toolbar.AddSeparator()
-
-        # Settings Button
-        toolbar.AddSimpleTool(wx.ID_SETUP, eg.GetBitmap_cog_png(), shortHelpString='Change file settings')
-        self.Bind(wx.EVT_TOOL, self._on_settings, id=wx.ID_SETUP)
-
         toolbar.AddStretchableSpace()
 
         # Pacman Button
+        # TODO - Determine if a Pacman button is necessary.
         toolbar.AddSimpleTool(wx.ID_ANY, eg.GetBitmap_pacman_png(), shortHelpString='Pacman')
         self.Bind(wx.EVT_TOOL, self._on_pacman, id=wx.ID_SETUP)
 
@@ -120,10 +113,12 @@ class FilePage(wx.Panel):
         return toolbar
 
     def _on_save(self, event):
-        app.save_file(self.data, self.filename, self.overwrite, self.backup)
-
-    def _on_settings(self, event):
-        pass
+        dlg = wx.FileDialog(self, 'Save Crestron SIMPL file', '', self.filename, 'Crestron SIMPL files (*.smw)|*.smw',
+                            (wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT))
+        if dlg.ShowModal() == wx.ID_OK:
+            filename = dlg.GetFilename()
+            filepath = dlg.GetDirectory()
+            app.save_file(self.data, os.path.join(filepath, filename), True, False)
 
     def _on_process(self, event):
         self.data.process()
