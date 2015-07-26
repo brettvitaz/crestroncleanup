@@ -107,6 +107,10 @@ class ObjType(object):
     def __str__(self):
         return repr(self)
 
+    @property
+    def name(self):
+        return self.get('Nm')
+
 
 class ObjTypeHeader(ObjType):
     ObjTp = 'Hd'
@@ -135,11 +139,23 @@ class ObjTypeSymbol(ObjType):
     ObjDesc = 'Symbol'
 
 
+SgTp = {
+    None: 'Digital',
+    '2': 'Analog',
+    '4': 'String',
+}
+
+DO_NOT_PROCESS_SIGNAL = ['//__digital_reserved__', '//__analog_reserved__', '//__serial_reserved__']
+
+
 class ObjTypeSignal(ObjType):
     ObjTp = 'Sg'
     ObjDesc = 'Signal'
 
     def _process(self, str_in):
+        if str_in in DO_NOT_PROCESS_SIGNAL:
+            return str_in
+
         str_out = str_in
         # Capitalize letters after a dash or underscore.
         str_out = re.sub(r'(^|[-_\[\(<])([a-z])', lambda _: _.group(1) + _.group(2).upper(), str_out)
@@ -169,6 +185,15 @@ class ObjTypeSignal(ObjType):
             raise Exception('Failed to process signal. Process operation is not idempotent. '
                             'Orig:{} New:{} Test:{}'.format(orig, temp, self._process(temp)))
         return orig != temp
+
+    @property
+    def signal_type(self):
+        return SgTp.get(self.get('SgTp'))
+
+    @ObjType.desc.getter
+    def desc(self):
+        desc = '%s: %s - %s' % (super(ObjTypeSignal, self).desc, self.name, self.signal_type)
+        return desc
 
 
 class ObjTypeFactory(object):
