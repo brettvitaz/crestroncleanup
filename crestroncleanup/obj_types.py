@@ -140,15 +140,15 @@ class ObjTypeHeader(ObjType):
 
     @property
     def dealer(self):
-        return self['DlrNm']
+        return self.get('DlrNm')
 
     @property
     def programmer(self):
-        return self['PgmNm']
+        return self.get('PgmNm')
 
     @ObjType.name.getter
     def name(self):
-        return self['CltNm']
+        return self.get('CltNm')
 
 
 class ObjTypeDatabase(ObjType):
