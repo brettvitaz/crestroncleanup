@@ -3,7 +3,7 @@ import shutil
 import sys
 import platform
 
-from crestroncleanup import obj_types
+from crestroncleanup import ObjStore
 
 NEW_EXT = '.new'
 OLD_EXT = '.old'
@@ -12,7 +12,7 @@ NEWLINE_NIX = '\r\n'
 
 
 def read_file(filename):
-    obj_store = obj_types.ObjStore()
+    obj_store = ObjStore()
     obj_data = collections.OrderedDict()
     with open(filename) as f:
         for line in f.readlines():
