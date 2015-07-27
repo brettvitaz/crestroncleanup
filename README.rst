@@ -9,7 +9,7 @@ Requirements:
 - Console:
     - `Python 2.7 or 3 <https://www.python.org>`_
 - GUI:
-    - `Python 2,7 <https://www.python.org>`_
+    - `Python 2.7 <https://www.python.org>`_
     - `wxPython (classic) 3.0.2.0 <http://wxpython.org/>`_
 
 Console Usage:
