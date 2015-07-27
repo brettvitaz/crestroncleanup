@@ -106,8 +106,8 @@ class FilePage(wx.Panel):
 
         # Pacman Button
         # TODO - Determine if a Pacman button is necessary.
-        toolbar.AddSimpleTool(100001, eg.GetBitmap_pacman_png(), shortHelpString='Pacman')
-        self.Bind(wx.EVT_TOOL, self._on_pacman, id=100001)
+        toolbar.AddSimpleTool(10, eg.GetBitmap_pacman_png(), shortHelpString='Pacman')
+        self.Bind(wx.EVT_TOOL, self._on_pacman, id=10)
 
         toolbar.Realize()
         return toolbar
@@ -149,7 +149,7 @@ class FilePage(wx.Panel):
 
                 self.SetSizer(sizer)
                 sizer.Fit(self)
-
+        print('pacman')
         dlg = PacmanDialog(self, wx.ID_ANY)
         dlg.ShowModal()
         dlg.Destroy()
