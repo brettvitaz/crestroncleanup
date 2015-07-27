@@ -1,9 +1,15 @@
 import sys
-import crestroncleanup_console
-import crestroncleanup_gui
 
-if __name__ == '__main__':
+from crestroncleanup import crestroncleanup_console
+from crestroncleanup import crestroncleanup_gui
+
+
+def main():
     if len(sys.argv) > 1:
         crestroncleanup_console.main()
     else:
         crestroncleanup_gui.main()
+
+
+if __name__ == '__main__':
+    main()

@@ -9,12 +9,12 @@ with open(path.join(here, 'README.rst')) as f:
 setup(
     name='crestroncleanup',
     version='0.1',
-    packages=['crestroncleanup'],
+    packages=['crestroncleanup', 'crestroncleanup.gui_wx'],
     url='https://github.com/brettvitaz/crestroncleanup',
     license='nunya',
     author='brettvitaz',
     author_email='brett@vitaz.net',
-    description='Clean up signal names and other parts of a messy Crestron SIMPL program.',
+    description='Clean up signal names and other parts of a messy Crestron SIMPL Windows program.',
     long_description=long_description,
     keywords=['crestron', 'simpl', 'cleanup'],
     classifiers=['Development Status :: 3 - Alpha'],
@@ -23,7 +23,7 @@ setup(
             'crestroncleanup = crestroncleanup.crestroncleanup_console:main',
         ],
         'gui_scripts': [
-            'crestroncleanupgui = crestroncleanup.crestroncleanup_gui:main'
+            'crestroncleanupgui = crestroncleanup.crestroncleanup_gui:main',
         ]
     }
 )

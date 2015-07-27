@@ -2,10 +2,10 @@ import os
 import wx
 import wx.aui
 import wx.dataview
-import file_services
 
-from gui_wx import embedded_graphics_16 as eg
-from obj_types import ObjType
+from crestroncleanup import file_services
+from crestroncleanup.gui_wx import embedded_graphics_16 as eg
+from crestroncleanup.obj_types import ObjType
 
 
 class FilePanel(wx.Panel):

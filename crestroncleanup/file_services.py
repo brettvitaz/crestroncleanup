@@ -3,7 +3,7 @@ import shutil
 import sys
 import platform
 
-import obj_types
+from crestroncleanup import obj_types
 
 NEW_EXT = '.new'
 OLD_EXT = '.old'
@@ -29,6 +29,7 @@ def read_file(filename):
                     sys.exit(2)
 
                 obj_data.update({k: v})
+
     return obj_store
 
 

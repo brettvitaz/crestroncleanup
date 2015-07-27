@@ -1,7 +1,7 @@
 import wx
 import wx.aui
 
-from gui_wx.file_panel import FilePanel
+from crestroncleanup.gui_wx.file_panel import FilePanel
 
 
 class MainWindow(wx.Frame):
