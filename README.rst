@@ -49,5 +49,4 @@ TODO:
 
 - Allow editing of signal names from data table.
 - Decode password protected SIMPL Windows files.
-- Upgrade GUI to `wxPython Phoenix <http://wxpython.org/Phoenix/docs/html/index.html>`_ (currently prerelease) and
-`Python 3 <https://www.python.org>`_
+- Upgrade GUI to `wxPython Phoenix <http://wxpython.org/Phoenix/docs/html/index.html>`_ (currently pre-release) and `Python 3 <https://www.python.org>`_
