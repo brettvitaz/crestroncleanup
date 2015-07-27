@@ -10,7 +10,7 @@ Requirements:
     - `Python 2.7 or 3 <https://www.python.org>`_
 - GUI:
     - `Python 2,7 <https://www.python.org>`_
-    - `wxPython (classic) 3.0.2.0 <http://wxpython.org/>`_ 
+    - `wxPython (classic) 3.0.2.0 <http://wxpython.org/>`_
 
 Console Usage:
 --------------
@@ -49,4 +49,5 @@ TODO:
 
 - Allow editing of signal names from data table.
 - Decode password protected SIMPL Windows files.
-- Upgrade GUI to `wxPython Phoenix <http://wxpython.org/Phoenix/docs/html/index.html>`_ (currently prerelease) and `Python 3<https://www.python.org>`_
+- Upgrade GUI to `wxPython Phoenix <http://wxpython.org/Phoenix/docs/html/index.html>`_ (currently prerelease) and
+`Python 3 <https://www.python.org>`_
