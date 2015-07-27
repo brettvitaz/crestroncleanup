@@ -1,6 +1,6 @@
 from collections import Counter
 
-from crestroncleanup import ObjTypeFactory, ObjTypeSignal
+from crestroncleanup.obj_types import ObjTypeFactory, ObjTypeSignal
 
 
 class ObjStore(object):

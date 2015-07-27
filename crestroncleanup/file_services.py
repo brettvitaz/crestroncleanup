@@ -3,7 +3,7 @@ import shutil
 import sys
 import platform
 
-from crestroncleanup import ObjStore
+from crestroncleanup.obj_store import ObjStore
 
 NEW_EXT = '.new'
 OLD_EXT = '.old'
