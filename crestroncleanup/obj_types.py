@@ -8,22 +8,28 @@ class ObjType(object):
     def __init__(self, k=None):
         if k is None:
             k = {}
-        self.obj_dict = k
+        self._obj_dict = k
 
     def __len__(self):
-        return len(self.obj_dict)
+        return len(self._obj_dict)
 
     def __getitem__(self, item):
-        return self.obj_dict[item]
+        return self._obj_dict[item]
 
     def __setitem__(self, item, value):
-        self.obj_dict[item] = value
+        self._obj_dict[item] = value
 
     def __delitem__(self, item):
-        del (self.obj_dict[item])
+        del self._obj_dict[item]
 
     def __iter__(self):
-        return iter(self.obj_dict.items())
+        return iter(self._obj_dict.items())
+
+    def __repr__(self):
+        return self.desc
+
+    def __str__(self):
+        return repr(self)
 
     def get(self, item, default=None):
         try:
@@ -43,18 +49,12 @@ class ObjType(object):
     def desc(self):
         return self.ObjDesc or self.type
 
-    def process(self):
-        return False
-
-    def __repr__(self):
-        return self.desc
-
-    def __str__(self):
-        return repr(self)
-
     @property
     def name(self):
         return self.get('Nm')
+
+    def process(self):
+        return False
 
 
 class ObjTypeVersion(ObjType):
