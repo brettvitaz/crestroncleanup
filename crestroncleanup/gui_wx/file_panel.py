@@ -15,6 +15,7 @@ class FilePanel(wx.Panel):
 
     def __init__(self, *args, **kwargs):
         super(FilePanel, self).__init__(*args, **kwargs)
+        # Add a notebook to display tabbed view of each file.
         self.file_notebook = FileNoteBook(self)
         sizer = wx.BoxSizer()
         sizer.Add(self.file_notebook, 1, wx.EXPAND)
@@ -59,11 +60,14 @@ class FilePage(wx.Panel):
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         main_sizer.Add(self._create_toolbar(), 0, wx.EXPAND)
 
+        # Text box for program information.
+        # TODO Find something else to put in there.
         text_box = wx.TextCtrl(self, wx.ID_ANY, style=(wx.TE_MULTILINE | wx.TE_READONLY))
 
         sizer = wx.BoxSizer()
         sizer.Add(text_box, 1, wx.EXPAND)
 
+        # Read the file and present the data view.
         self.data = file_services.read_file(os.path.join(filepath, filename))
 
         model = FileTreeListModel(self.data.obj_dict)
@@ -149,13 +153,16 @@ class FilePage(wx.Panel):
 
                 self.SetSizer(sizer)
                 sizer.Fit(self)
-        print('pacman')
+
         dlg = PacmanDialog(self, wx.ID_ANY)
         dlg.ShowModal()
         dlg.Destroy()
 
 
 class FileTreeListModel(wx.dataview.PyDataViewModel):
+    """
+    Model for handling the specific program object data.
+    """
     MAPPER = {
         0: 'string',  # Object Type
         1: 'string',  # Object Name
@@ -163,6 +170,7 @@ class FileTreeListModel(wx.dataview.PyDataViewModel):
 
     def __init__(self, data, *args, **kwargs):
         super(FileTreeListModel, self).__init__(*args, **kwargs)
+        # Remove uninteresting entries from the data set.
         self._data = {k: v for k, v in data.items() if
                       k not in ['Bk', 'Bw', 'CED', 'Cm', 'Cs', 'Et', 'EtU', 'FP', 'FSgntr', 'SrU']}
 

@@ -2,13 +2,16 @@ import re
 
 
 class ObjType(object):
+    """
+    Base type to store unknown types and types without specific processing ability.
+    """
     ObjTp = ''
     ObjDesc = ''
 
-    def __init__(self, k=None):
-        if k is None:
-            k = {}
-        self._obj_dict = k
+    def __init__(self, obj_dict=None):
+        if obj_dict is None:
+            obj_dict = {}
+        self._obj_dict = obj_dict
 
     def __len__(self):
         return len(self._obj_dict)
@@ -58,6 +61,10 @@ class ObjType(object):
 
 
 class ObjTypeVersion(ObjType):
+    """
+    Version string type.
+    I have only ever observed '1' as the version...
+    """
     ObjTp = None
     ObjDesc = 'Version'
 
@@ -71,19 +78,31 @@ class ObjTypeVersion(ObjType):
 
 
 class ObjTypeHeader(ObjType):
+    """
+    Header contains program data like client name, dealer name, and program name.
+    """
     ObjTp = 'Hd'
     ObjDesc = 'Header'
 
     @property
     def dealer(self):
+        """
+        Dealer name.
+        """
         return self.get('DlrNm')
 
     @property
     def programmer(self):
+        """
+        Programmer name.
+        """
         return self.get('PgmNm')
 
     @ObjType.name.getter
     def name(self):
+        """
+        Client name.
+        """
         return self.get('CltNm')
 
 
@@ -93,6 +112,9 @@ class ObjTypeDatabase(ObjType):
 
     @ObjType.name.getter
     def name(self):
+        """
+        SIMPL Database item name.
+        """
         return self.get('Mnf') + ' ' + self.get('Mdl')
 
 
@@ -144,23 +166,42 @@ class ObjTypeSignal(ObjType):
         return str_out
 
     def process(self):
+        """
+        Process the signal name by reformatting it.
+        :return: True if signal has changed.
+        :raise Exception:
+        """
         orig = self['Nm']
         temp = self._process(orig)
         if temp == self._process(temp):
             self['Nm'] = temp
         else:
+            # Raise exception if signal is not idempotent.
+            # TODO Create and handle a special exception for this. `ProcessException`
             raise Exception('Failed to process signal. Process operation is not idempotent. '
                             'Orig:{} New:{} Test:{}'.format(orig, temp, self._process(temp)))
         return orig != temp
 
     @property
     def signal_type(self):
+        """
+        Signal type: Digital, Analog, or Serial.
+        """
         return SgTp.get(self.get('SgTp'))
 
 
 class ObjTypeFactory(object):
+    """
+    Creates ObjType subclass objects based on their ObjTp property.
+    """
+    # Register the all of the ObjType subclasses.
     OBJ_TYPES = {cls.ObjTp: cls for cls in ObjType.__subclasses__()}
 
     @staticmethod
-    def create(k):
-        return ObjTypeFactory.OBJ_TYPES.get(k.get('ObjTp'), ObjType)(k)
+    def create(obj_data):
+        """
+        Return an ObjType object from object data.
+        :param obj_data: Object data dictionary.
+        :return type: ObjType
+        """
+        return ObjTypeFactory.OBJ_TYPES.get(obj_data.get('ObjTp'), ObjType)(obj_data)

@@ -62,7 +62,7 @@ def save_file(obj_store, filename, overwrite=False, backup=True):
 
     # Write the file
     with open(filename + new_ext, mode='w') as f:
-        for obj in obj_store.items():
+        for obj in obj_store.obj_list:
             obj_lines = ['[{}'.format(newline)]
             for k, v in obj:
                 obj_lines.append('{}={}{}'.format(k, v, newline))
