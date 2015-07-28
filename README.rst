@@ -17,7 +17,7 @@ Console Usage:
 
 ::
 
-    usage: crestroncleanup [-h] [-o] [-b] filename
+    usage: python crestroncleanup [-h] [-o] [-b] filename
 
     Clean up signals in a messy Crestron SIMPL file.
 
