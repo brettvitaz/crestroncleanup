@@ -151,8 +151,36 @@ class ObjTypeSignal(ObjType):
         # Capitalize 'fb' if it is not part of another word.
         str_out = re.sub(re.compile(r'(_)(fb)($|[^A-Za-z])', re.IGNORECASE),
                          lambda _: _.group(1) + _.group(2).upper() + _.group(3), str_out)
+
         # Split numbers from words.
-        str_out = re.sub(re.compile(r'([a-z])(\d)', re.IGNORECASE), r'\1_\2', str_out)
+
+        # Do not split model numbers and simple hex numbers. Ex. MTX3-A_Source, IP-ID-A0_Signal_Name
+        def split_letters_from_numbers(match):
+            start_pos = match.start()
+
+            # Check if first item, don't convert the first item.
+            if '_' not in match.string[0:start_pos]:
+                return match.group()
+
+            # Check if item is all caps, this can be a model number.
+            for pos in range(start_pos, 0, -1):
+                if match.string[pos] == '_':
+                    if re.findall(r'^[A-Z0-9]+$', match.string[pos + 1:start_pos + 1]):
+                        return match.group()
+                    break
+
+            # Check for simple hex numbers.
+            if re.search(r'[A-Fa-f]', match.group(1)):
+                pos = start_pos
+                if pos > 0:
+                    pos -= 1
+                    if re.search(r'[-_]', match.string[pos]):
+                        return match.group()
+
+            return match.group(1) + '_' + match.group(2)
+
+        str_out = re.sub(re.compile(r'([a-z])(\d)', re.IGNORECASE), split_letters_from_numbers, str_out)
+
         # Pad numbers with a 0.
         # TODO: Identify and correctly pad number sequences over 2 digits when necessary.
         str_out = re.sub(r'(_)(\d)(?![\d-])', lambda _: '{}{:0>2s}'.format(*_.groups()), str_out)
